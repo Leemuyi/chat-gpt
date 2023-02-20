@@ -1,4 +1,11 @@
-package cn.com.mooyea.chatgpt.entity.system;/**
+package cn.com.mooyea.chatgpt.entity.system;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
  * <h1>SystemConfig<h1>
  * <p>Copyright (C), 星期一,20,2月,2023</p>
  * <br/>
@@ -6,7 +13,6 @@ package cn.com.mooyea.chatgpt.entity.system;/**
  * <h3>File Info:</h3>
  * <p>FileName: SystemConfig</p>
  * <p>Author:   mooye</p>
- * <p>Work_Email： lidy@skyvis.com.cn</p>
  * <p>E-mail： mooyeali@yeah.net</p>
  * <p>Date:     2023/2/20</p>
  * <p>Description: 配置页实体类</p>
@@ -23,9 +29,41 @@ package cn.com.mooyea.chatgpt.entity.system;/**
  * </table>
  * <hr>
  * <br/>
- *@author mooye
+ *
+ * @author mooye
  */
 
-
- public class SystemConfig {
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+public class SystemConfig {
+	/**
+	 * ChatGPT Authorization
+	 */
+	private String chatGptAuth;
+	/**
+	 * 百度云应用的AK
+	 */
+	private String apiKey;
+	/**
+	 * 百度云应用的SK
+	 */
+	private String secretKey;
+	/**
+	 * 存储方式,0:配置文件,1:redis 存储
+	 */
+	private Integer type;
+	/**
+	 * redis 主机 ip
+	 */
+	private String host;
+	/**
+	 * redis 主机访问端口
+	 */
+	private Integer port;
+	/**
+	 * redis 密码
+	 */
+	private String redisAuth;
 }

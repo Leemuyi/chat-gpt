@@ -1,8 +1,9 @@
-package top.mooyea.wordclouds.vo;
+package cn.com.mooyea.chatgpt.vo;
 
+import cn.com.mooyea.chatgpt.constant.CommonConstant;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import top.mooyea.wordclouds.constant.CommonConstant;
+
 
 import java.io.Serializable;
 

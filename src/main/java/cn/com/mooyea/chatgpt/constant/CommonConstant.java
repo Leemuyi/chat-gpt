@@ -1,4 +1,4 @@
-package top.mooyea.wordclouds.constant;
+package cn.com.mooyea.chatgpt.constant;
 
 /**
  * @Description: 通用常量
