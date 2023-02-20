@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>服务配置页</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.2/base64.min.js"></script>
+    <style type="text/css">
+        table {
+            width: 80%;
+        }
+        td {
+            padding: 10px 5px;
+        }
+        .key {
+            width: 20%;
+            text-align: center;
+        }
+        .value {
+            width: 80%;
+        }
+        .text_input {
+            width: 50%;
+        }
+        .hidden {
+            display: none;
+        }
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body style="padding-right: 20px;padding-left: 20px">
+<h1 style="text-align: center">ChatGPT 服务配置</h1>
+<hr>
+<h3 style="text-align: left">chatGPT 配置</h3>
+<hr>
+<div style="align-content: center">
+    <table>
+        <tr>
+            <td class="key">
+                <label for="chat_gpt_auth">Authorization:</label>
+            </td>
+            <td class="value">
+                <input class="text_input" type="text" id="chat_gpt_auth" placeholder="ChatGPT 授权秘钥">
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <h3>配置百度文本检测服务</h3>
+    <hr>
+    <table>
+        <tr>
+            <td class="key">
+                <label for="api_key">API Key:</label>
+            </td>
+            <td class="value">
+                <input class="text_input" type="text" id="api_key" placeholder="百度云应用的AK">
+            </td>
+        </tr>
+        <tr>
+            <td class="key">
+                <label for="secret_key">Secret Key:</label>
+            </td>
+            <td class="value">
+                <input class="text_input" type="text" id="secret_key" placeholder="百度云应用的SK">
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
+    <h3  style="text-align: left">配置访问方式</h3>
+    <hr>
+    <form>选择配置存储方式:<br>
+        <label> <input type="radio" name="type" value="0" checked="checked"> yaml 配置文件 </label>
+        <label> <input type="radio" name="type" value="1"> redis存储 </label>
+    </form>
+</div>
+<div class="hidden" id="redis">
+    <p>请注意,如果使用 redis 作为配置存储请先安装 redis,并且设置 redis 密码为:chatGPTRedisPwd,端口为 6379。建议不要将 6379 端口对外映射</p>
+</div>
+<div style="float: right">
+    <button id="submit" onclick="submitConfig()">保存</button>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        init();
+        change_access_method();
+    });
+    let change_access_method = function () {
+        $('input:radio[name="type"]').change(function () {
+            let val = Number($(this).val());
+            if (val === 0) {
+                $("#redis").attr("class","hidden");
+            } else if (val === 1) {
+                $("#redis").attr("class","show");
+            } else {
+                $("#redis").attr("class","hidden");
+            }
+        });
+    }
+    // init
+    let init = function () {
+        radio_change();
+        $.ajax({
+            url:"/system/showConfig",
+            type:"POST",
+            dataType: "json",
+            success:function(data){
+                console.log(data);
+                if (data.success){
+                    let entity = data.result;
+                    $("#chat_gpt_auth").val(entity.chat_gpt_auth);
+                    $("#read_chat_file").val(entity.readPath);
+                    $("#write_chat_file").val(entity.writePath);
+                    $("#word_cloud_path").val(entity.wordCloud);
+                    $("#accessKey").val(Base64.encode(entity.accessKey));
+                    $("#secretKey").val(Base64.encode(entity.secretKey));
+                    $("#endpoint").val(entity.endpoint);
+                    $("#bucketName").val(entity.bucketName);
+                    $("#nginx_port").val(entity.nginxPort);
+                    $("#yaml_path").val(entity.nginxPath);
+                    // 设置单选框
+                    radio_change(entity.type);
+                }else {
+                    alert(data.message);
+                }
+            },
+            error:function(){
+                alert("网络错误!");
+            }
+        });
+    }
+
+    let radio_change = function (type) {
+        // 先清理 checked 属性
+        if (type == 0){
+            $("input[name='type'][value='0']").attr("checked",true);
+            $("#redis").attr("class","hidden");
+        }else if (type == 1){
+            $("input[name='type'][value='1']").attr("checked",true);
+            $("#redis").attr("class","show");
+        }else {
+            $('input:radio[name="type"]').removeAttr('checked');
+            $("#redis").attr("class","hidden");
+        }
+    }
+    let submitConfig = function () {
+        let param = {
+            "chat_gpt_auth":$("#chat_gpt_auth").val(),
+            "readPath":$("#read_chat_file").val(),
+            "writePath":$("#write_chat_file").val(),
+            "wordCloud":$("#word_cloud_path").val()
+        }
+        param["accessMethod"] = $("input[name='type']:checked").val();
+        param["accessKey"] = Base64.decode($("#accessKey").val());
+        param["secretKey"] = Base64.decode($("#secretKey").val());
+        param["endpoint"] = $("#endpoint").val();
+        param["bucketName"] = $("#bucketName").val();
+        param["nginxPort"] = $("#nginx_port").val();
+        param["nginxPath"] = $("#yaml_path").val();
+        console.log(param);
+        // Open asynchronous request
+        $.ajax({
+            url:"/system/config",
+            dataType:"json",
+            type:"POST",
+            data:param,
+            success:function(data){
+                console.log(data);
+                alert(data.message);
+                location.reload();
+            },
+            error:function(){
+                alert("网络错误!");
+            }
+        });
+    }
+    let encodeStr = function (th) {
+        let id = th.id;
+        console.log(id);
+        let val = $("#"+id).val();
+        console.log(val);
+        let encode = Base64.encode(val);
+        console.log(encode);
+        $("#"+id).val(encode);
+    }
+</script>
+</html>
