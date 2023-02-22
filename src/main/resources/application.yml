@@ -23,6 +23,6 @@ spring:
     cache: false
   redis:
     host: 127.0.0.1
-    password: 'Lee,123520'
+    password: 'chatGPTRedisPwd'
     database: 0
     port: 6379
