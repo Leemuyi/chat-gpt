@@ -1,4 +1,4 @@
-package top.mooyea.wordclouds.constant;
+package cn.com.mooyea.chatgpt.constant;
 
 import java.util.regex.Pattern;
 

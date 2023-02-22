@@ -1,4 +1,5 @@
-package org.jeecg.modules.config;
+package cn.com.mooyea.chatgpt.config;
+
 
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializeConfig;
@@ -63,7 +64,7 @@ public class RedisTemplateConfig {
     private String password;
     @Value("${spring.redis.database:0}")
     private int defaultIndex;
-    private static final List<Integer> INDEX_LIST = new ArrayList<Integer>() {{
+    private static final List<Integer> INDEX_LIST = new ArrayList<>() {{
         add(0);
         add(1);
         add(2);

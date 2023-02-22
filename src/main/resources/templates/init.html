@@ -103,7 +103,6 @@
     }
     // init
     let init = function () {
-        radio_change();
         $.ajax({
             url:"/system/showConfig",
             type:"POST",
@@ -112,16 +111,9 @@
                 console.log(data);
                 if (data.success){
                     let entity = data.result;
-                    $("#chat_gpt_auth").val(entity.chat_gpt_auth);
-                    $("#read_chat_file").val(entity.readPath);
-                    $("#write_chat_file").val(entity.writePath);
-                    $("#word_cloud_path").val(entity.wordCloud);
-                    $("#accessKey").val(Base64.encode(entity.accessKey));
-                    $("#secretKey").val(Base64.encode(entity.secretKey));
-                    $("#endpoint").val(entity.endpoint);
-                    $("#bucketName").val(entity.bucketName);
-                    $("#nginx_port").val(entity.nginxPort);
-                    $("#yaml_path").val(entity.nginxPath);
+                    $("#chat_gpt_auth").val(entity.chatGptAuth);
+                    $("#api_key").val(entity.apiKey);
+                    $("#secret_key").val(entity.secretKey);
                     // 设置单选框
                     radio_change(entity.type);
                 }else {
@@ -149,22 +141,15 @@
     }
     let submitConfig = function () {
         let param = {
-            "chat_gpt_auth":$("#chat_gpt_auth").val(),
-            "readPath":$("#read_chat_file").val(),
-            "writePath":$("#write_chat_file").val(),
-            "wordCloud":$("#word_cloud_path").val()
+            "chatGptAuth":$("#chat_gpt_auth").val(),
+            "apiKey":$("#api_key").val(),
+            "secretKey":$("#secret_key").val(),
+            "type":$("input[name='type']:checked").val()
         }
-        param["accessMethod"] = $("input[name='type']:checked").val();
-        param["accessKey"] = Base64.decode($("#accessKey").val());
-        param["secretKey"] = Base64.decode($("#secretKey").val());
-        param["endpoint"] = $("#endpoint").val();
-        param["bucketName"] = $("#bucketName").val();
-        param["nginxPort"] = $("#nginx_port").val();
-        param["nginxPath"] = $("#yaml_path").val();
         console.log(param);
         // Open asynchronous request
         $.ajax({
-            url:"/system/config",
+            url:"/system/saveConfig",
             dataType:"json",
             type:"POST",
             data:param,

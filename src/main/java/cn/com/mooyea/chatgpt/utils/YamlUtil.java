@@ -1,4 +1,15 @@
-package cn.com.mooyea.chatgpt.utils;/**
+package cn.com.mooyea.chatgpt.utils;
+
+import cn.com.mooyea.chatgpt.vo.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+/**
  * <h1>YamlUtil<h1>
  * <p>Copyright (C), 星期一,20,2月,2023</p>
  * <br/>
@@ -23,9 +34,33 @@ package cn.com.mooyea.chatgpt.utils;/**
  * </table>
  * <hr>
  * <br/>
- *@author mooye
+ *
+ * @author mooye
  */
 
+@Slf4j
+public class YamlUtil {
+	public static Map<String, Object> getConfig(InputStream stream){
+		Yaml yaml = new Yaml();
+		return yaml.load(stream);
+	}
 
- public class YamlUtil {
+	public static Result<?> updateConfig(Map<String, Object> yamlMap, String path){
+		Yaml yaml = new Yaml();
+		if (yamlMap!=null) {
+			try (FileWriter fileWriter = new FileWriter(path)) {
+				log.info("配置:{}", yamlMap);
+				// 用yaml方法把map结构格式化为yaml文件结构 重新写入yaml文件
+				fileWriter.write(yaml.dumpAsMap(yamlMap));
+				// 刷新
+				fileWriter.flush();
+				// 关闭流
+			} catch (IOException e) {
+				return Result.error(e.getMessage());
+			}
+			return Result.OK("配置保存成功!");
+		}else {
+			return Result.error("未读取到配置文件!");
+		}
+	}
 }
