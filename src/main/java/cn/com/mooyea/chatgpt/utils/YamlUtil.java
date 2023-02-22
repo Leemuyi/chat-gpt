@@ -45,14 +45,11 @@ public class YamlUtil {
 		return yaml.load(stream);
 	}
 
-	public static Result<?> updateConfig(Map<String, Object> yamlMap,String path,String key,Object value){
+	public static Result<?> updateConfig(Map<String, Object> yamlMap, String path){
 		Yaml yaml = new Yaml();
 		if (yamlMap!=null) {
 			try (FileWriter fileWriter = new FileWriter(path)) {
 				log.info("配置:{}", yamlMap);
-				// 修改配置
-				Map<String, Object> updataMap = (Map<String, Object>) yamlMap.get("qq-logs");
-				updataMap.put(key, value);
 				// 用yaml方法把map结构格式化为yaml文件结构 重新写入yaml文件
 				fileWriter.write(yaml.dumpAsMap(yamlMap));
 				// 刷新
