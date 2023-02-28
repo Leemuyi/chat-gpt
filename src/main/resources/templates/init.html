@@ -70,6 +70,28 @@
     </table>
 </div>
 <div>
+    <h3>ERNIE-ViLG AI作画大模型</h3>
+    <hr>
+    <table>
+        <tr>
+            <td class="key">
+                <label for="vilg_api_key">API Key:</label>
+            </td>
+            <td class="value">
+                <input class="text_input" type="text" id="vilg_api_key" placeholder="ERNIE-ViLG AI作画大模型应用的AK">
+            </td>
+        </tr>
+        <tr>
+            <td class="key">
+                <label for="vilg_secret_key">Secret Key:</label>
+            </td>
+            <td class="value">
+                <input class="text_input" type="text" id="vilg_secret_key" placeholder="ERNIE-ViLG AI作画大模型应用的SK">
+            </td>
+        </tr>
+    </table>
+</div>
+<div>
     <h3  style="text-align: left">配置访问方式</h3>
     <hr>
     <form>选择配置存储方式:<br>
@@ -114,6 +136,8 @@
                     $("#chat_gpt_auth").val(entity.chatGptAuth);
                     $("#api_key").val(entity.apiKey);
                     $("#secret_key").val(entity.secretKey);
+                    $("#vilg_api_key").val(entity.vilgApiKey);
+                    $("#vilg_secret_key").val(entity.vilgSecretKey);
                     // 设置单选框
                     radio_change(entity.type);
                 }else {
@@ -144,6 +168,8 @@
             "chatGptAuth":$("#chat_gpt_auth").val(),
             "apiKey":$("#api_key").val(),
             "secretKey":$("#secret_key").val(),
+            "vilgApiKey":$("#vilg_api_key").val(),
+            "vilgSecretKey":$("#vilg_secret_key").val(),
             "type":$("input[name='type']:checked").val()
         }
         console.log(param);

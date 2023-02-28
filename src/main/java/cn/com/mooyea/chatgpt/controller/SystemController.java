@@ -1,30 +1,23 @@
 package cn.com.mooyea.chatgpt.controller;
 
-import cn.com.mooyea.chatgpt.config.RedisTemplateConfig;
+import cn.com.mooyea.chatgpt.common.SystemConstant;
 import cn.com.mooyea.chatgpt.entity.system.SystemConfig;
 import cn.com.mooyea.chatgpt.utils.ProjectPathUtil;
 import cn.com.mooyea.chatgpt.utils.RedisTemplateUtil;
 import cn.com.mooyea.chatgpt.utils.YamlUtil;
 import cn.com.mooyea.chatgpt.vo.Result;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -64,18 +57,18 @@ import java.util.Objects;
 public class SystemController {
 	@Resource
 	RedisTemplateUtil redisTemplateUtil;
-	private static final String CONFIG = ProjectPathUtil.getProjectPath()+"/config.yaml";
+	private static final String CONFIG = ProjectPathUtil.getProjectPath()+"/"+ SystemConstant.CONFIG_FILE_NAME;
 
 	@GetMapping("/init")
 	public ModelAndView initModelAndView() {
-		return new ModelAndView("init");
+		return new ModelAndView(SystemConstant.INDEX_PAGE_NAME);
 	}
 
 	@PostMapping("/showConfig")
 	public Result<?> showConfiguration()  {
-		Result<JSONObject> result = new Result<>();
 		log.info(CONFIG);
-		Integer type = (Integer) redisTemplateUtil.get("type",0);
+		
+		Integer type = (Integer) redisTemplateUtil.get(SystemConstant.CONFIG_TYPE,0);
 		File configFile = new File(CONFIG);
 		if (!configFile.exists() && type == null){
 			return Result.error("第一次启动,请先配置!");
@@ -105,10 +98,12 @@ public class SystemController {
 
 
 	private Result<?> saveRedisConfig(SystemConfig config) {
-		redisTemplateUtil.set("chat_gpt_auth",config.getChatGptAuth(),0);
-		redisTemplateUtil.set("ak",config.getApiKey(),0);
-		redisTemplateUtil.set("sk",config.getSecretKey(),0);
-		redisTemplateUtil.set("type",config.getType(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_CHAT_GPT_AUTH,config.getChatGptAuth(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_AK,config.getApiKey(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_SK,config.getSecretKey(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_VILG_AK,config.getVilgApiKey(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_VILG_SK,config.getVilgSecretKey(),0);
+		redisTemplateUtil.set(SystemConstant.CONFIG_TYPE,config.getType(),0);
 		// 判断 yaml 是否存在
 		File yaml = new File(CONFIG);
 		if (yaml.exists()){
@@ -122,7 +117,7 @@ public class SystemController {
 	}
 
 	private Result<?> saveYamlConfig(SystemConfig config)  {
-		Map<String,Object> map = null;
+		Map<String,Object> map;
 		try {
 			map = YamlUtil.getConfig(new FileInputStream(CONFIG));
 		} catch (FileNotFoundException e) {
@@ -139,9 +134,11 @@ public class SystemController {
 		if (map==null) {
 			map = new HashMap<>(16);
 		}
-		map.put("chat_gpt_auth",config.getChatGptAuth());
-		map.put("ak",config.getApiKey());
-		map.put("sk",config.getSecretKey());
+		map.put(SystemConstant.CONFIG_CHAT_GPT_AUTH,config.getChatGptAuth());
+		map.put(SystemConstant.CONFIG_AK,config.getApiKey());
+		map.put(SystemConstant.CONFIG_SK,config.getSecretKey());
+		map.put(SystemConstant.CONFIG_VILG_AK,config.getVilgApiKey());
+		map.put(SystemConstant.CONFIG_VILG_SK,config.getVilgSecretKey());
 		return YamlUtil.updateConfig(map,CONFIG);
 	}
 
@@ -149,11 +146,14 @@ public class SystemController {
 	private Result<?> handlerYaml(File file) throws FileNotFoundException {
 		Map<String,Object> map = YamlUtil.getConfig(new FileInputStream(file));
 		if (map != null) {
-			String chatAuth = (String) map.get("chat_gpt_auth");
-			String apiKey = (String) map.get("ak");
-			String secretKey = (String) map.get("sk");
+			String chatAuth = (String) map.get(SystemConstant.CONFIG_CHAT_GPT_AUTH);
+			String apiKey = (String) map.get(SystemConstant.CONFIG_AK);
+			String secretKey = (String) map.get(SystemConstant.CONFIG_SK);
+			String vilgAk = (String) map.get(SystemConstant.CONFIG_VILG_AK);
+			String vilgSk = (String) map.get(SystemConstant.CONFIG_VILG_SK);
 			SystemConfig systemConfig = SystemConfig.builder()
-					.chatGptAuth(chatAuth).apiKey(apiKey).secretKey(secretKey).type(0)
+					.chatGptAuth(chatAuth).apiKey(apiKey).secretKey(secretKey)
+					.vilgApiKey(vilgAk).vilgSecretKey(vilgSk).type(0)
 					.build();
 			return Result.OK("成功!", systemConfig);
 		}
@@ -161,13 +161,16 @@ public class SystemController {
 	}
 
 	private Result<?> handlerRedis() {
-		Integer type = (Integer) redisTemplateUtil.get("type",0);
+		Integer type = (Integer) redisTemplateUtil.get(SystemConstant.CONFIG_TYPE,0);
 		if (type != null) {
-			String chatAuth = (String) redisTemplateUtil.get("chat_gpt_auth", 0);
-			String apiKey = (String) redisTemplateUtil.get("ak", 0);
-			String secretKey = (String) redisTemplateUtil.get("sk", 0);
+			String chatAuth = (String) redisTemplateUtil.get(SystemConstant.CONFIG_CHAT_GPT_AUTH, 0);
+			String apiKey = (String) redisTemplateUtil.get(SystemConstant.CONFIG_AK, 0);
+			String secretKey = (String) redisTemplateUtil.get(SystemConstant.CONFIG_SK, 0);
+			String vilgAk = (String) redisTemplateUtil.get(SystemConstant.CONFIG_VILG_AK, 0);
+			String vilgSk = (String) redisTemplateUtil.get(SystemConstant.CONFIG_VILG_SK, 0);
 			SystemConfig systemConfig = SystemConfig.builder()
-					.chatGptAuth(chatAuth).apiKey(apiKey).secretKey(secretKey).type(type)
+					.chatGptAuth(chatAuth).apiKey(apiKey).secretKey(secretKey)
+					.vilgApiKey(vilgAk).vilgSecretKey(vilgSk).type(type)
 					.build();
 			return Result.OK("成功!", systemConfig);
 		}
