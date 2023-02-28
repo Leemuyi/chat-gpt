@@ -1,8 +1,7 @@
 package cn.com.mooyea.chatgpt.controller;
 
 import cn.com.mooyea.chatgpt.common.GeneralCommon;
-import cn.com.mooyea.chatgpt.utils.ProjectPathUtil;
-import cn.com.mooyea.chatgpt.utils.RedisTemplateUtil;
+import cn.com.mooyea.chatgpt.common.SystemConstant;
 import cn.com.mooyea.chatgpt.vo.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,22 +45,17 @@ import java.util.Objects;
 @RequestMapping("/chat")
 public class ChatGptController {
 
-	private static final String CONFIG = ProjectPathUtil.getProjectPath()+"/config.yaml";
-	@Resource
-	RedisTemplateUtil redisTemplateUtil;
 	@Resource
 	GeneralCommon generalCommon;
 
 	@GetMapping("/gpt")
 	public Result<?> chatGpt(String text){
-		String authenticator = generalCommon.readConfig("chat_gpt_auth");
-		String ak = generalCommon.readConfig("ak");
-		String sk = generalCommon.readConfig("sk");
-		String baiduToken = generalCommon.readConfig("token");
+		String ak = generalCommon.readConfig(SystemConstant.CONFIG_AK);
+		String sk = generalCommon.readConfig(SystemConstant.CONFIG_SK);
 		// 调用百度文本校验接口校验
 		String token = generalCommon.getBaiduToken(ak,sk);
 		int checkFlag = generalCommon.textVerification(token,text);
-		String warning = "";
+		String warning;
 		switch (checkFlag){
 			case 2:
 			case 4:
@@ -75,7 +69,7 @@ public class ChatGptController {
 		}
 		// 调用 ChatGPT 接口生成文本返回
 		String res = generalCommon.getResponseText(text);
-		if (Objects.equals(res,"0")){
+		if (Objects.equals(res,SystemConstant.SYSTEM_FUN_RETURN)){
 			return Result.error("抱歉，我无法回答这个问题（违规,已记录）！！");
 		}
 		if (!Objects.equals("",warning)){

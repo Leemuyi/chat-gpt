@@ -51,6 +51,14 @@ public class SystemConfig {
 	 */
 	private String secretKey;
 	/**
+	 * ERNIE-ViLG AI作画大模型应用的AK
+	 */
+	private String vilgApiKey;
+	/**
+	 * ERNIE-ViLG AI作画大模型应用的SK
+	 */
+	private String vilgSecretKey;
+	/**
 	 * 存储方式,0:配置文件,1:redis 存储
 	 */
 	private Integer type;

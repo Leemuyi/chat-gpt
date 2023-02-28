@@ -1,5 +1,7 @@
 package cn.com.mooyea.chatgpt.utils;
 
+import cn.com.mooyea.chatgpt.common.SystemConstant;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 
 
 public class ProjectPathUtil {
-	private static final String PROJECT_NAME = "chat-gpt-0.0.1.jar";
 
 	public static String getProjectPath() {
 
@@ -47,8 +48,8 @@ public class ProjectPathUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (filePath != null && filePath.contains(PROJECT_NAME)) {
-			filePath = filePath.split(PROJECT_NAME)[0];
+		if (filePath != null && filePath.contains(SystemConstant.PROJECT_NAME)) {
+			filePath = filePath.split(SystemConstant.PROJECT_NAME)[0];
 		}
 		File file = new File(filePath);
 		filePath = file.getPath();
