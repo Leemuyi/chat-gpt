@@ -7,6 +7,8 @@
 ![Language](https://img.shields.io/badge/Language-Java-<yellow>)
 ![Language](https://img.shields.io/badge/Language-HTML-<yellow>)
 ![Language](https://img.shields.io/badge/Language-JavaScript-<yellow>)
+
+[![项目地址](https://img.shields.io/badge/项目地址-GitHub-<yellow>)](https://github.com/Leemuyi/chat-gpt)
 ## 项目简介
 本项目利用百度文本校验 Api 实现敏感词、违禁词校验.使用国内开发者提供的 ChatGPT 接口服务实现文本内容的生成。使用 ERNIE-ViLG AI 作画大模型实现绘图。
 
