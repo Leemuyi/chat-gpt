@@ -1,5 +1,14 @@
 # ChatGPT 服务提供
-本项目利用百度文本校验 Api 实现敏感词、违禁词校验.使用国内开发者提供的 ChatGPT 接口服务实现文本内容的生成.
+
+![License](https://img.shields.io/badge/license-MIT-yellow)
+![Java](https://img.shields.io/badge/Java-OpenJdk11+-<yellow>)
+![Maven](https://img.shields.io/badge/Maven-3.x-<yellow>)
+
+![Language](https://img.shields.io/badge/Language-Java-<yellow>)
+![Language](https://img.shields.io/badge/Language-HTML-<yellow>)
+![Language](https://img.shields.io/badge/Language-JavaScript-<yellow>)
+## 项目简介
+本项目利用百度文本校验 Api 实现敏感词、违禁词校验.使用国内开发者提供的 ChatGPT 接口服务实现文本内容的生成。使用 ERNIE-ViLG AI 作画大模型实现绘图。
 
 ## 部分 Api 说明
 ### 调用百度鉴权接口获取 token,接口为:
@@ -39,7 +48,7 @@ curl -i -k "https://wenxin.baidu.com/moduleApi/portal/api/rest/1.0/ernievilg/v1/
     2. 使用`java -jar chat-gpt-0.0.1.jar`启动项目即可,启动后访问 http://localhost:11023/system/init 进行配置相关参数,由于ChatGPT 接口不再使用 OpenAI 的接口提供服务,因此页面上的`Authorization`字段可以随意填写;
     3. 调用`http://localhost:11023/chat/gpt?text=参数` 即可获取生成的文本;
     4. 调用`http://localhost:11023/painting/painting?des=参数` 即可获取生成的图片;
-- 如果你想做一些更改请关注`cn.com.mooyea.chatgpt.controller.ChatGptController.java`以及`cn.com.mooyea.chatgpt.common.GeneralCommon.java`两个类即可。
+- 如果你想做一些更改请关注`cn.com.mooyea.chatgpt.controller.ChatGptController.java`、`cn.com.mooyea.chatgpt.common.GeneralCommon.java`、`cn.com.mooyea.chatgpt.common.PaintingController.java`等。
 
 ## 鸣谢
 感谢夏柔公益 Api 提供的 ChatGPT 接口服务。
